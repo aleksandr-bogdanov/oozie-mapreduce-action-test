@@ -1,0 +1,83 @@
+<workflow-app name="oozie_mapreduce_test" xmlns="uri:oozie:workflow:0.4">
+
+	<global>
+		<job-tracker>${JOB_TRACKER_URI}</job-tracker>
+		<name-node>${NAME_NODE_URI}</name-node>
+		<configuration>
+			<property>
+				<name>mapreduce.job.queuename</name>
+				<value>${QUEUE_NAME}</value>
+			</property>
+			<property>
+				<name>mapred.mapper.new-api</name>
+				<value>true</value>
+			</property>
+			<property>
+				<name>mapred.reducer.new-api</name>
+				<value>true</value>
+			</property>
+		</configuration>
+	</global>
+
+	<start to="wordcount"/>
+
+    <action name="wordcount">
+        <map-reduce>
+            <prepare>
+                <delete path="${NAME_NODE_URI}/user/abogdanov/output/"/>
+            </prepare>
+
+            <configuration>
+                <property>
+                    <name>mapreduce.job.reduces</name>
+                    <value>1</value>
+                </property>
+
+                <property>
+                    <name>mapreduce.map.class</name>
+                    <value>org.abogdanov.oozie_mapreduce_action_test.MFilterPunctuation</value>
+                </property>
+                <property>
+                    <name>mapreduce.reduce.class</name>
+                    <value>org.abogdanov.oozie_mapreduce_action_test.RWordCount</value>
+                </property>
+
+                <property>
+                    <name>mapreduce.job.inputformat.class</name>
+                    <value>org.apache.hadoop.mapreduce.lib.input.TextInputFormat</value>
+                </property>
+                <property>
+                    <name>mapreduce.job.outputformat.class</name>
+                    <value>org.apache.hadoop.mapreduce.lib.output.TextOutputFormat</value>
+                </property>
+
+                <property>
+                    <name>mapreduce.job.output.key.class</name>
+                    <value>org.apache.hadoop.io.Text</value>
+                </property>
+                <property>
+                    <name>mapreduce.job.output.value.class</name>
+                    <value>org.apache.hadoop.io.IntWritable</value>
+                </property>
+
+                <property>
+                    <name>mapreduce.input.fileinputformat.inputdir</name>
+                    <value>input/</value>
+                </property>
+                <property>
+                    <name>mapreduce.output.fileoutputformat.outputdir</name>
+                    <value>output/</value>
+                </property>
+            </configuration>
+        </map-reduce>
+        <ok to="end"/>
+        <error to="kill"/>
+    </action>
+
+	<kill name="kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <end name="end"/>
+
+</workflow-app>
