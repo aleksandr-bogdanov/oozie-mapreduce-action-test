@@ -51,7 +51,15 @@
                     <value>org.apache.hadoop.mapreduce.lib.output.TextOutputFormat</value>
                 </property>
 
-                <property>
+				<!-- <property>
+					<name>mapred.mapoutput.key.class</name>
+					<value>org.apache.hadoop.io.Text</value>
+				</property>
+				<property>
+					<name>mapred.mapoutput.value.class</name>
+					<value>org.apache.hadoop.io.IntWritable</value>
+				</property> -->
+				<property>
                     <name>mapreduce.job.output.key.class</name>
                     <value>org.apache.hadoop.io.Text</value>
                 </property>
